@@ -1,0 +1,91 @@
+{
+  "name": "user-service",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/user-service/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "defaultConfiguration": "development",
+      "options": {
+        "main": "apps/user-service/src/main.ts",
+        "outputFileName": "main.js",
+        "tsConfig": "apps/user-service/tsconfig.app.json",
+        "target": "node",
+        "compiler": "tsc",
+        "webpackConfig": "apps/user-service/webpack.config.js",
+        "deleteOutputPath": true
+      },
+      "configurations": {
+        "production": {
+          "outputPath": "apps/user-service/dist/production",
+          "optimization": true,
+          "generatePackageJson": true,
+          "generateLockfile": true
+        },
+        "development": {
+          "outputPath": "apps/user-service/dist/development",
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "user-service:build"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "user-service:build:production",
+          "inspect": false,
+          "watch": false,
+          "waitUntilTargets": ["user-service:build:production"]
+        },
+        "development": {
+          "buildTarget": "user-service:build:development",
+          "inspect": true,
+          "watch": true,
+          "waitUntilTargets": ["user-service:build:development"]
+        }
+      }
+    },
+    "versioning": {
+      "executor": "@jscutlery/semver:version",
+      "options": {
+        "baseBranch": "HEAD:main",
+        "syncVersions": false,
+        "noVerify": false,
+        "push": true,
+        "remote": "origin",
+        "tag": true,
+        "tagFormat": "${projectName}-${version}",
+        "changelog": true,
+        "changelogFile": "CHANGELOG.md",
+        "parallel": false
+      },
+      "dependsOn": ["build"]
+    },
+    "publish-docker": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "node ./tools/docker/publish_docker.js {projectName} true"
+        ],
+        "parallel": false
+      },
+      "dependsOn": ["versioning"]
+    },
+    "generate-docker-image": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["node ./tools/docker/publish_docker.js {projectName}"],
+        "parallel": false
+      },
+      "dependsOn": ["build"]
+    }
+  },
+  "tags": []
+}
