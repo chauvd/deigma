@@ -1,12 +1,19 @@
-import { ObjectId } from 'mongoose';
+import { Prop } from '@nestjs/mongoose';
+import { Types } from 'mongoose';
+
+export type EntityId = string | Types.UUID;
 
 export abstract class EntityBase {
-  _id: ObjectId;
-  createdAt: Date;
-  updatedAt: Date;
+  @Prop({
+    type: Types.UUID,
+    required: true,
+    default: () => new Types.UUID(),
+  })
+  _id: Types.UUID;
 
-  constructor() {
-    this.createdAt = new Date();
-    this.updatedAt = new Date();
-  }
+  @Prop({ type: Date, default: Date.now })
+  createdAt: Date;
+
+  @Prop({ type: Date, default: Date.now })
+  updatedAt: Date;
 }

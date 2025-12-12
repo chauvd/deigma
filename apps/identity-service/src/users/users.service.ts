@@ -1,9 +1,9 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto } from '@deigma/dtos';
 import { DomainMapper } from '@deigma/mapper';
-import { PagedResult } from '@deigma/domain';
+import { EntityId, PagedResult } from '@deigma/domain';
 import { User } from './user.entity';
-import { ObjectId, Types } from 'mongoose';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class UsersService {
@@ -20,9 +20,9 @@ export class UsersService {
     return new PagedResult([], 0);
   }
 
-  async findOne(id: number): Promise<User> {
+  async findOne(id: EntityId): Promise<User> {
     return {
-      _id: new Types.UUID().toString() as unknown as ObjectId,
+      _id: new Types.UUID(),
       email: 'sample@gmail.com',
       givenName: 'Sample',
       familyName: 'User',
@@ -31,12 +31,12 @@ export class UsersService {
     } as User;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+  async update(id: EntityId, updateUserDto: UpdateUserDto): Promise<User> {
     const payload = this.mapper.map(updateUserDto, User);
     return payload;
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: EntityId): Promise<void> {
     return;
   }
 }
