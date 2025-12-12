@@ -1,10 +1,12 @@
 
-import { Controller, Get } from '@nestjs/common';
+import { ILogger } from '@deigma/logging';
+import { Controller, Get, Inject } from '@nestjs/common';
 import { HealthCheckService, HealthCheck, MemoryHealthIndicator } from '@nestjs/terminus';
 
 @Controller('health')
 export class HealthController {
     constructor(
+        @Inject(ILogger) private readonly logger: ILogger,
         private health: HealthCheckService,
         private memoryHealthIndicator: MemoryHealthIndicator
     ) { }
@@ -12,6 +14,7 @@ export class HealthController {
     @Get()
     @HealthCheck()
     check() {
+        this.logger.info('Health check requested');
         return this.health.check([
             // the process should not use more than 300MB memory
             () =>

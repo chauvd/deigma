@@ -41,8 +41,13 @@
   "targetDefaults": {
     "@nx/js:tsc": {
       "cache": false,
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "production",
+        "^production"
+      ]
     }
   },
   "generators": {

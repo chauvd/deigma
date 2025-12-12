@@ -9,7 +9,9 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
-    "lib": ["es2022"],
+    "lib": [
+      "es2022"
+    ],
     "module": "esnext",
     "moduleResolution": "node",
     "noEmitOnError": true,
@@ -21,9 +23,19 @@
     "skipDefaultLibCheck": true,
     "target": "es2022",
     "paths": {
-      "@deigma/configuration": ["packages/infrastructure/configuration/src/index.ts"],
-      "@deigma/dtos": ["packages/shared/dtos/src/index.ts"]
+      "@deigma/configuration": [
+        "packages/infrastructure/configuration/src/index.ts"
+      ],
+      "@deigma/logging": [
+        "packages/infrastructure/logging/src/index.ts"
+      ],
+      "@deigma/dtos": [
+        "packages/shared/dtos/src/index.ts"
+      ]
     }
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": [
+    "node_modules",
+    "tmp"
+  ]
 }

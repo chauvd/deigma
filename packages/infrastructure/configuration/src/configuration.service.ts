@@ -5,7 +5,7 @@ export abstract class BaseConfigurationService {
   constructor(protected configService: NestedConfig) { }
 
   protected get(key: string): string {
-    const value = process.env[key] ?? this.configService.get<string>(key);
+    const value = process.env[key] ?? this.configService?.get<string>(key);
     if (!value) {
       throw new Error(`Config error: ${key} is not defined`);
     }
@@ -13,7 +13,7 @@ export abstract class BaseConfigurationService {
   }
 
   protected getArray(key: string): string[] {
-    const value = process.env[key] ?? this.configService.get<string>(key);
+    const value = process.env[key] ?? this.configService?.get<string>(key);
     if (!value) {
       throw new Error(`Config error: ${key} is not defined`);
     }
@@ -21,7 +21,7 @@ export abstract class BaseConfigurationService {
   }
 
   protected getBoolean(key: string): boolean {
-    const value = process.env[key] ?? this.configService.get(key);
+    const value = process.env[key] ?? this.configService?.get(key);
     if (!value) {
       throw new Error(`Config error: ${key} is not defined`);
     }
@@ -29,7 +29,7 @@ export abstract class BaseConfigurationService {
   }
 
   protected getNumber(key: string): number {
-    const value = process.env[key] ?? this.configService.get(key);
+    const value = process.env[key] ?? this.configService?.get(key);
     if (!value) {
       throw new Error(`Config error: ${key} is not defined`);
     }
@@ -48,5 +48,37 @@ export abstract class BaseConfigurationService {
 
   get serverPort(): number {
     return this.getNumber('SERVER_PORT');
+  }
+
+  get isSwaggerEnabled(): boolean {
+    return this.getBoolean('SWAGGER_ENABLED');
+  }
+
+  get swaggerTitle(): string {
+    return this.get('SWAGGER_TITLE');
+  }
+
+  get swaggerDescription(): string {
+    return this.get('SWAGGER_DESCRIPTION');
+  }
+
+  get appName(): string {
+    return this.get('APP_NAME');
+  }
+
+  get logLevel(): string {
+    const logLevel = this.get('LOG_LEVEL');
+    if (!['debug', 'info', 'warn', 'error'].includes(logLevel)) {
+      throw new Error(`Config error: LOG_LEVEL is not a valid log level`);
+    }
+    return logLevel;
+  }
+
+  get logTo(): string {
+    const logTo = this.get('LOG_TO');
+    if (!['console'].includes(logTo)) {
+      throw new Error(`Config error: LOG_TO is not a valid log destination`);
+    }
+    return logTo;
   }
 }
