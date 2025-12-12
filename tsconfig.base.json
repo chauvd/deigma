@@ -29,9 +29,15 @@
       "@deigma/logging": [
         "packages/infrastructure/logging/src/index.ts"
       ],
+      "@deigma/domain": [
+        "packages/shared/domain/src/index.ts"
+      ],
       "@deigma/dtos": [
         "packages/shared/dtos/src/index.ts"
-      ]
+      ],
+      "@deigma/mapper": [
+        "packages/shared/mapper/src/index.ts"
+      ],
     }
   },
   "exclude": [

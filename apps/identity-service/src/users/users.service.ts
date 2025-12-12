@@ -1,25 +1,42 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto } from '@deigma/dtos';
+import { DomainMapper } from '@deigma/mapper';
+import { PagedResult } from '@deigma/domain';
+import { User } from './user.entity';
+import { ObjectId, Types } from 'mongoose';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(
+    @Inject() private readonly mapper: DomainMapper,
+  ) { }
+
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const payload = this.mapper.map(createUserDto, User);
+    return payload;
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll(): Promise<PagedResult<User>> {
+    return new PagedResult([], 0);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number): Promise<User> {
+    return {
+      _id: new Types.UUID().toString() as unknown as ObjectId,
+      email: 'sample@gmail.com',
+      givenName: 'Sample',
+      familyName: 'User',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as User;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+    const payload = this.mapper.map(updateUserDto, User);
+    return payload;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number): Promise<void> {
+    return;
   }
 }
