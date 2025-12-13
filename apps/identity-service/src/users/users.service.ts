@@ -4,15 +4,13 @@ import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 
 @Injectable()
-export class UsersService extends BaseService<User> {
+export class UsersService extends BaseService<User, UserRepository> {
 
-  constructor(
-    private readonly repo: UserRepository
-  ) {
-    super(repo, 'User');
+  constructor(repository: UserRepository) {
+    super(repository, User.name);
   }
 
   async getByEmail(email: string): Promise<User | null> {
-    return this.repo.findByEmail(email);
+    return this.repository.findByEmail(email);
   }
 }

@@ -2,13 +2,13 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { EntityBase } from '@deigma/domain';
 
-export type UserDocument = HydratedDocument<User>;
+export type TenantDocument = HydratedDocument<Tenant>;
 
 @Schema({
   timestamps: true,
   versionKey: false,
 })
-export class User extends EntityBase {
+export class Tenant extends EntityBase {
 
   @Prop({
     required: true,
@@ -17,14 +17,8 @@ export class User extends EntityBase {
   status: 'active' | 'inactive' | 'suspended';
 
   @Prop({ required: true })
-  familyName: string;
-
-  @Prop({ required: true })
-  givenName: string;
-
-  @Prop({ required: true, unique: true })
-  email: string
+  name: string;
 
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+export const TenantSchema = SchemaFactory.createForClass(Tenant);

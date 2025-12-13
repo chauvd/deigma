@@ -1,12 +1,13 @@
 import { Injectable, Scope } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import { ClientSession, Connection, Types } from 'mongoose';
+import { EntityId } from './entity.base';
 
 @Injectable({ scope: Scope.REQUEST })
 export class TenantContext {
   private _tenantId!: Types.UUID;
 
-  setTenant(id: string | Types.UUID) {
+  setTenant(id: EntityId) {
     this._tenantId = typeof id === 'string' ? new Types.UUID(id) : id;
   }
 

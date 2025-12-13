@@ -8,6 +8,8 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
+      redis:
+        condition: service_started
     networks:
       - deigma-network
     environment:
@@ -39,6 +41,18 @@ services:
       - deigma-network
     healthcheck:
       test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - deigma-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 5

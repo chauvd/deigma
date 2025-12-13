@@ -14,7 +14,7 @@ export class UserRepository extends BaseRepository<User> {
   }
 
   // Domain-specific queries live here
-  async findByEmail(email: string): Promise<User | null> {
+  public async findByEmail(email: string): Promise<User | null> {
     return this.model.findOne({ email }).lean().exec();
   }
 }

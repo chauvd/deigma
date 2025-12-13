@@ -1,5 +1,4 @@
-import { DtoSchema } from "@deigma/mapper";
-import { Field } from "packages/shared/mapper/src/field.decorator";
+import { DtoSchema, Field } from "@deigma/mapper";
 import z from "zod";
 
 @DtoSchema(
@@ -20,6 +19,9 @@ export class CreateUserDto {
   })
 )
 export class UpdateUserDto {
+
+  @Field()
+  status?: string;
 
   @Field()
   givenName?: string;

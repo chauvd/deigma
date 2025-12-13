@@ -6,6 +6,8 @@ import { HealthModule } from '../health/health.module';
 import { UsersModule } from '../users/users.module';
 import { MappersModule } from '../mapper/mapper.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { TenantsModule } from '../tenant/tenant.module';
+import { SubscriptionsModule } from '../tenant/subscription/subscription.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { MongooseModule } from '@nestjs/mongoose';
     HealthModule,
     LoggingModule,
     MappersModule,
+    TenantsModule,
+    SubscriptionsModule,
     UsersModule
   ],
   providers: [],

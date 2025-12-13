@@ -23,6 +23,7 @@ export abstract class EntityBase {
 
 export abstract class TenantEntityBase extends EntityBase {
 
-  @Prop({ required: true, index: true })
+  @Prop({ required: true, ref: 'Tenant', index: true })
   tenantId: Types.UUID;
+
 }

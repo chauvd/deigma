@@ -4,14 +4,12 @@ import z from 'zod';
 @DtoSchema(
   z.object({
     id: z.string(),
-    email: z.email(),
-    givenName: z.string(),
-    familyName: z.string(),
+    name: z.string(),
     createdAt: z.date(),
     updatedAt: z.date(),
   })
 )
-export class UserDto {
+export class SubscriptionDto {
   @Field({ target: '_id' })
   id: string;
 
@@ -19,13 +17,7 @@ export class UserDto {
   status: string;
 
   @Field()
-  givenName: string;
-
-  @Field()
-  familyName: string;
-
-  @Field()
-  email: string;
+  name: string;
 
   @Field()
   createdAt: Date;

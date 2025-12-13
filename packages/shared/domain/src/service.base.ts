@@ -4,10 +4,10 @@ import { EntityBase, TenantEntityBase } from './entity.base';
 import { BaseRepository, TenantBaseRepository } from './repository.base';
 import { TenantContext } from './tenant';
 
-export abstract class BaseService<T extends EntityBase> {
+export abstract class BaseService<T extends EntityBase, R extends BaseRepository<T> = BaseRepository<T>> {
 
   protected constructor(
-    protected readonly repository: BaseRepository<T>,
+    protected readonly repository: R,
     protected readonly entityName: string,
   ) { }
 
@@ -63,9 +63,9 @@ export abstract class BaseService<T extends EntityBase> {
   }
 }
 
-export abstract class TenantBaseService<T extends TenantEntityBase> {
+export abstract class TenantBaseService<T extends TenantEntityBase, R extends TenantBaseRepository<T> = TenantBaseRepository<T>> {
   protected constructor(
-    protected readonly repository: TenantBaseRepository<T>,
+    protected readonly repository: R,
     protected readonly tenantContext: TenantContext,
     protected readonly entityName: string,
   ) { }
@@ -78,7 +78,11 @@ export abstract class TenantBaseService<T extends TenantEntityBase> {
     return new Types.UUID(id);
   }
 
-  async getById(id: string): Promise<T> {
+  async create(data: Partial<T>): Promise<T> {
+    return this.repository.create(this.tenantId, data);
+  }
+
+  async findById(id: string): Promise<T> {
     const entity = await this.repository.findById(
       this.tenantId,
       this.toUuid(id),
@@ -91,5 +95,11 @@ export abstract class TenantBaseService<T extends TenantEntityBase> {
     }
 
     return entity;
+  }
+
+  async findByTenantId(tenantId: string): Promise<T[]> {
+    return this.repository.findAll(
+      this.toUuid(tenantId),
+    );
   }
 }
