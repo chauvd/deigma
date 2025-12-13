@@ -1,16 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Inject } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto, UserDto } from '@deigma/dtos';
-import { MapTo } from '@deigma/mapper';
+import { DomainMapper, MapTo } from '@deigma/mapper';
+import { User } from './user.entity';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(
+    @Inject() private readonly mapper: DomainMapper,
+    private readonly usersService: UsersService
+  ) { }
 
   @Post()
   @MapTo(UserDto)
   async create(@Body() createUserDto: CreateUserDto) {
-    return await this.usersService.create(createUserDto);
+    const payload = this.mapper.map(createUserDto, User);
+    return await this.usersService.create(payload);
   }
 
   @Get()
@@ -22,17 +27,18 @@ export class UsersController {
   @Get(':id')
   @MapTo(UserDto)
   async findOne(@Param('id') id: string) {
-    return await this.usersService.findOne(id);
+    return await this.usersService.findById(id);
   }
 
   @Patch(':id')
   @MapTo(UserDto)
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return await this.usersService.update(id, updateUserDto);
+    const payload = this.mapper.map(updateUserDto, User);
+    return await this.usersService.update(id, payload);
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    return await this.usersService.remove(id);
+    await this.usersService.delete(id);
   }
 }

@@ -10,13 +10,13 @@
     "start:identity-service": "nx serve identity-service",
     "start:all": "nx run-many --target=serve --projects=identity-service --parallel",
     "build:identity-service": "nx build identity-service",
-    "build:all": "nx run-many --target=build --projects=identity-service --parallel",
+    "build:all": "nx run-many --target=build --configuration=production --projects=identity-service --parallel",
     "lint:identity-service": "nx lint identity-service",
     "lint:all": "nx run-many --target=lint --all",
-    "docker:generate:all": "nx run-many --target=generate-docker-image --configuration=production --projects=identity-service",
-    "docker:generate:identity-service": "nx run identity-service:generate-docker-image:production",
-    "docker:publish:all": "nx run-many --target=publish-docker --configuration=production --projects=identity-service",
-    "docker:publish:identity-service": "nx run identity-service:publish-docker:production"
+    "docker:build:all": "nx run-many --target=docker --configuration=production --projects=identity-service",
+    "docker:build:identity-service": "nx run identity-service:docker",
+    "docker:run": "pnpm run build:all && pnpm run docker:stop && docker-compose -f ./tools/docker/docker-compose.yaml build --no-cache && docker-compose -f ./tools/docker/docker-compose.yaml up -d",
+    "docker:stop": "docker-compose -f ./tools/docker/docker-compose.yaml down"
   },
   "dependencies": {
     "@casl/ability": "^6.7.3",
@@ -45,6 +45,7 @@
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
     "supertest": "^7.1.4",
+    "tslib": "^2.3.0",
     "winston": "^3.19.0",
     "zod": "^4.1.13"
   },
@@ -82,7 +83,6 @@
     "prettier": "^2.6.2",
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
-    "tslib": "^2.3.0",
     "typescript": "~5.9.2"
   },
   "optionalDependencies": {

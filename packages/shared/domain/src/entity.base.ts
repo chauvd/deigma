@@ -16,4 +16,13 @@ export abstract class EntityBase {
 
   @Prop({ type: Date, default: Date.now })
   updatedAt: Date;
+
+  @Prop({ type: Date, default: null, index: true })
+  deletedAt: Date | null;
+}
+
+export abstract class TenantEntityBase extends EntityBase {
+
+  @Prop({ required: true, index: true })
+  tenantId: Types.UUID;
 }

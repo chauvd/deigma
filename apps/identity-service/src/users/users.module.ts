@@ -4,6 +4,7 @@ import { UsersController } from './users.controller';
 import { DtoMapper, DomainMapper } from '@deigma/mapper';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './user.entity';
+import { UserRepository } from './user.repository';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { User, UserSchema } from './user.entity';
   controllers: [UsersController],
   providers: [
     UsersService,
+    UserRepository,
     DtoMapper,
     DomainMapper
   ],

@@ -1,42 +1,18 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { CreateUserDto, UpdateUserDto } from '@deigma/dtos';
-import { DomainMapper } from '@deigma/mapper';
-import { EntityId, PagedResult } from '@deigma/domain';
+import { Injectable } from '@nestjs/common';
+import { BaseService } from '@deigma/domain';
 import { User } from './user.entity';
-import { Types } from 'mongoose';
+import { UserRepository } from './user.repository';
 
 @Injectable()
-export class UsersService {
+export class UsersService extends BaseService<User> {
+
   constructor(
-    @Inject() private readonly mapper: DomainMapper,
-  ) { }
-
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const payload = this.mapper.map(createUserDto, User);
-    return payload;
+    private readonly repo: UserRepository
+  ) {
+    super(repo, 'User');
   }
 
-  async findAll(): Promise<PagedResult<User>> {
-    return new PagedResult([], 0);
-  }
-
-  async findOne(id: EntityId): Promise<User> {
-    return {
-      _id: new Types.UUID(),
-      email: 'sample@gmail.com',
-      givenName: 'Sample',
-      familyName: 'User',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    } as User;
-  }
-
-  async update(id: EntityId, updateUserDto: UpdateUserDto): Promise<User> {
-    const payload = this.mapper.map(updateUserDto, User);
-    return payload;
-  }
-
-  async remove(id: EntityId): Promise<void> {
-    return;
+  async getByEmail(email: string): Promise<User | null> {
+    return this.repo.findByEmail(email);
   }
 }

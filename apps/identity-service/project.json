@@ -74,23 +74,11 @@
         "build"
       ]
     },
-    "publish-docker": {
+    "docker": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "node ./tools/docker/publish_docker.js {projectName} true"
-        ],
-        "parallel": false
-      },
-      "dependsOn": [
-        "versioning"
-      ]
-    },
-    "generate-docker-image": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "node ./tools/docker/publish_docker.js {projectName}"
+          "docker build -f apps/{projectName}/Dockerfile -t deigma/{projectName}:latest ."
         ],
         "parallel": false
       },

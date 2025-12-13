@@ -5,22 +5,7 @@ import { BaseConfigurationService } from '@deigma/configuration';
 @Injectable()
 export class ConfigurationService extends BaseConfigurationService {
 
-  // identity-service specific getters
-  get jwtSecret(): string {
-    return this.get('JWT_SECRET');
+  get databaseUrl(): string {
+    return this.get('DATABASE_URL');
   }
-
-  get jwtExpirationTime(): string {
-    return this.get('JWT_EXPIRATION_TIME');
-  }
-
-  get databaseHost(): string {
-    return this.get('DATABASE_HOST');
-  }
-
-  get databasePort(): number {
-    return this.getNumber('DATABASE_PORT');
-  }
-
-  // ... other identity-service specific getters
 }
