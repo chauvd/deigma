@@ -4,9 +4,12 @@ export abstract class BaseConfigurationService {
 
   constructor(protected configService: NestedConfig) { }
 
-  protected get(key: string): string {
+  protected get(key: string, defaultValue?: string): string {
     const value = process.env[key] ?? this.configService?.get<string>(key);
     if (!value) {
+      if (defaultValue) {
+        return defaultValue;
+      }
       throw new Error(`Config error: ${key} is not defined`);
     }
     return value;

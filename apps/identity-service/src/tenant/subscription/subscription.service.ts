@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { TenantBaseService, TenantContext } from '@deigma/domain';
-import { Subscription } from './subscription.entity';
-import { SubscriptionRepository } from './subscription.repository';
+import { BaseTenantEntityService, TenantContext } from '@deigma/domain';
+import { TenantSubscription } from './subscription.entity';
+import { TenantSubscriptionRepository } from './subscription.repository';
 
 @Injectable()
-export class SubscriptionService extends TenantBaseService<Subscription, SubscriptionRepository> {
+export class TenantSubscriptionService extends BaseTenantEntityService<TenantSubscription, TenantSubscriptionRepository> {
 
-  constructor(repository: SubscriptionRepository, tenantContext: TenantContext) {
-    super(repository, tenantContext, Subscription.name);
+  constructor(repository: TenantSubscriptionRepository, tenantContext: TenantContext) {
+    super(repository, tenantContext, TenantSubscription.name);
   }
 
 }

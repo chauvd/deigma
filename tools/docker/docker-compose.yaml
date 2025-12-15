@@ -18,6 +18,7 @@ services:
       - LOG_LEVEL=debug
       - LOG_TO=console
       - NODE_ENV=production
+      - REDIS_URL=redis://redis:6379
       - SERVER_PORT=3001
       - SWAGGER_ENABLED=true
       - SWAGGER_TITLE=Identity Service API

@@ -2,13 +2,13 @@ import { TenantEntityBase } from "@deigma/domain";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { HydratedDocument } from "mongoose";
 
-export type SubscriptionDocument = HydratedDocument<Subscription>;
+export type TenantSubscriptionDocument = HydratedDocument<TenantSubscription>;
 
 @Schema({
   timestamps: true,
   versionKey: false,
 })
-export class Subscription extends TenantEntityBase {
+export class TenantSubscription extends TenantEntityBase {
 
   @Prop({ required: true })
   name: string;
@@ -21,4 +21,4 @@ export class Subscription extends TenantEntityBase {
 
 }
 
-export const SubscriptionSchema = SchemaFactory.createForClass(Subscription);
+export const TenantSubscriptionSchema = SchemaFactory.createForClass(TenantSubscription);

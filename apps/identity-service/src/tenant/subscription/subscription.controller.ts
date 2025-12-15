@@ -1,36 +1,33 @@
 import { Body, Controller, Get, Inject, Param, Post } from "@nestjs/common";
-import { SubscriptionService } from "./subscription.service";
+import { TenantSubscriptionService } from "./subscription.service";
 import { DomainMapper, MapTo } from "@deigma/mapper";
-import { Subscription } from "./subscription.entity";
-import { CreateSubscriptionDto, SubscriptionDto } from "@deigma/dtos";
+import { TenantSubscription } from "./subscription.entity";
+import { CreateTenantSubscriptionDto, TenantSubscriptionDto } from "@deigma/dtos";
 
 @Controller('tenants/:tenantId/subscriptions')
-export class SubscriptionsController {
+export class TenantSubscriptionsController {
 
   constructor(
     @Inject() private readonly mapper: DomainMapper,
-    private readonly subscriptionsService: SubscriptionService
+    private readonly subscriptionsService: TenantSubscriptionService
   ) { }
 
   @Get()
-  @MapTo(SubscriptionDto)
-  findAll(@Param('tenantId') tenantId: string) {
+  @MapTo(TenantSubscriptionDto)
+  async findAll(@Param('tenantId') tenantId: string) {
     return this.subscriptionsService.findByTenantId(tenantId);
   }
 
   @Post()
-  @MapTo(SubscriptionDto)
-  create(
-    @Param('tenantId') tenantId: string,
-    @Body() dto: CreateSubscriptionDto,
-  ) {
-    const payload = this.mapper.map(dto, Subscription);
+  @MapTo(TenantSubscriptionDto)
+  async create(@Body() dto: CreateTenantSubscriptionDto) {
+    const payload = this.mapper.map(dto, TenantSubscription);
     return this.subscriptionsService.create(payload);
   }
 
   @Get(':subscriptionId')
-  @MapTo(SubscriptionDto)
-  findOne(
+  @MapTo(TenantSubscriptionDto)
+  async findOne(
     @Param('subscriptionId') subscriptionId: string,
   ) {
     return this.subscriptionsService.findById(subscriptionId);

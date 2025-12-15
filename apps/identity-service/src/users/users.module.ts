@@ -13,7 +13,7 @@ import { UserRepository } from './user.repository';
         name: User.name,
         schema: UserSchema
       },
-    ]),
+    ])
   ],
   controllers: [UsersController],
   providers: [
@@ -21,6 +21,6 @@ import { UserRepository } from './user.repository';
     UserRepository,
     DtoMapper,
     DomainMapper
-  ],
+  ]
 })
 export class UsersModule { }

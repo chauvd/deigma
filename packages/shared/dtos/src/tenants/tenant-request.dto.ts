@@ -1,22 +1,22 @@
 import { DtoSchema, Field } from "@deigma/mapper";
 import z from "zod";
 
-@DtoSchema(
-  z.object({
-    name: z.email()
-  })
-)
+export const CreateTenantDtoSchema = z.object({
+  name: z.email()
+});
+
+@DtoSchema(CreateTenantDtoSchema)
 export class CreateTenantDto {
 
   @Field()
   name: string;
 }
 
-@DtoSchema(
-  z.object({
-    name: z.string(),
-  })
-)
+export const UpdateTenantDtoSchema = z.object({
+  name: z.string().optional(),
+});
+
+@DtoSchema(UpdateTenantDtoSchema)
 export class UpdateTenantDto {
 
   @Field()

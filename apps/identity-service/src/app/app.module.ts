@@ -3,29 +3,27 @@ import { CorrelationIdMiddleware, LoggingModule } from '@deigma/logging';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigurationService } from '../configuration/configuration.service';
 import { HealthModule } from '../health/health.module';
-import { UsersModule } from '../users/users.module';
 import { MappersModule } from '../mapper/mapper.module';
-import { MongooseModule } from '@nestjs/mongoose';
+import { TenantMembershipsModule } from '../tenant/membership/membership.module';
+import { TenantSubscriptionsModule } from '../tenant/subscription/subscription.module';
 import { TenantsModule } from '../tenant/tenant.module';
-import { SubscriptionsModule } from '../tenant/subscription/subscription.module';
+import { UsersModule } from '../users/users.module';
+import { AppCacheModule } from './cache.module';
+import { AppDatabaseModule } from './database.module';
 
 @Module({
   imports: [
     ConfigurationModule.register({
       useClass: ConfigurationService,
     }),
-    MongooseModule.forRootAsync({
-      imports: [ConfigurationModule],
-      useFactory: async (configService: ConfigurationService) => ({
-        uri: configService.databaseUrl,
-      }),
-      inject: [ConfigurationService]
-    }),
+    AppCacheModule,
+    AppDatabaseModule,
     HealthModule,
     LoggingModule,
     MappersModule,
     TenantsModule,
-    SubscriptionsModule,
+    TenantMembershipsModule,
+    TenantSubscriptionsModule,
     UsersModule
   ],
   providers: [],

@@ -8,4 +8,17 @@ export class ConfigurationService extends BaseConfigurationService {
   get databaseUrl(): string {
     return this.get('DATABASE_URL');
   }
+
+  get redisUrl(): string {
+    return this.get('REDIS_URL');
+  }
+
+  get redisNamespace(): string {
+    return this.get('REDIS_NAMESPACE', 'idx');
+  }
+
+  get redisKeyPrefixSeparator(): string {
+    return this.get('REDIS_KEY_PREFIX_SEPARATOR', ':');
+  }
+
 }

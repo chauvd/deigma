@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { BaseService } from '@deigma/domain';
+import { BaseEntityService } from '@deigma/domain';
 import { Tenant } from './tenant.entity';
 import { TenantRepository } from './tenant.repository';
 
 @Injectable()
-export class TenantsService extends BaseService<Tenant, TenantRepository> {
+export class TenantsService extends BaseEntityService<Tenant, TenantRepository> {
 
   constructor(repository: TenantRepository) {
     super(repository, Tenant.name);

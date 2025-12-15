@@ -1,26 +1,28 @@
 import { DomainMapper, DtoMapper } from '@deigma/mapper';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { SubscriptionsController } from './subscription.controller';
-import { Subscription, SubscriptionSchema } from './subscription.entity';
-import { SubscriptionRepository } from './subscription.repository';
-import { SubscriptionService } from './subscription.service';
+import { TenantSubscriptionsController } from './subscription.controller';
+import { TenantSubscription, TenantSubscriptionSchema } from './subscription.entity';
+import { TenantSubscriptionRepository } from './subscription.repository';
+import { TenantSubscriptionService } from './subscription.service';
+import { TenantContext } from '@deigma/domain';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       {
-        name: Subscription.name,
-        schema: SubscriptionSchema
+        name: TenantSubscription.name,
+        schema: TenantSubscriptionSchema
       },
     ]),
   ],
-  controllers: [SubscriptionsController],
+  controllers: [TenantSubscriptionsController],
   providers: [
-    SubscriptionService,
-    SubscriptionRepository,
+    TenantSubscriptionService,
+    TenantSubscriptionRepository,
+    TenantContext,
     DtoMapper,
     DomainMapper
   ],
 })
-export class SubscriptionsModule { }
+export class TenantSubscriptionsModule { }
