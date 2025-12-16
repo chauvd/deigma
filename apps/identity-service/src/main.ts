@@ -5,12 +5,17 @@ import compression from 'compression';
 import helmet from 'helmet';
 import { AppModule } from './app/app.module';
 import { ConfigurationService } from './configuration/configuration.service';
+import { HttpObservabilityInterceptor } from '@deigma/observability';
 
 async function bootstrap() {
   try {
     const app = await NestFactory.create(AppModule);
 
     app.useGlobalPipes(new ValidationPipe());
+
+    app.useGlobalInterceptors(
+      app.get(HttpObservabilityInterceptor),
+    );
 
     const configService = app.get(ConfigurationService);
 

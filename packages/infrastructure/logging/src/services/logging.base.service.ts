@@ -29,6 +29,12 @@ export abstract class LogBaseService {
 		return corelationId;
 	}
 
+	protected get defaultData() {
+		return {
+			correlationId: this.correlationId
+		}
+	}
+
 	protected get consoleFormat() {
 		const format = winston.format.combine(
 			winston.format.timestamp(),

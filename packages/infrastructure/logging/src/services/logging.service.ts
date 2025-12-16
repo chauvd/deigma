@@ -28,46 +28,41 @@ export class LogService extends LogBaseService implements ILogger {
   }
 
   public async log(message: string, data?: any) {
-    const corelationId = this.correlationId;
     if (data) {
-      this.logger.log({ level: 'info', message, data, corelationId });
+      this.logger.log({ level: 'info', message, data, ...this.defaultData });
     } else {
-      this.logger.log({ level: 'info', message, corelationId });
+      this.logger.log({ level: 'info', message, ...this.defaultData });
     }
   }
 
   public async debug(message: string, data?: any) {
-    const corelationId = this.correlationId;
     if (data) {
-      this.logger.debug(message + data, { data, corelationId });
+      this.logger.debug(message + data, { data, ...this.defaultData });
     }
-    this.logger.debug(message, { corelationId });
+    this.logger.debug(message, { ...this.defaultData });
   }
 
   public async info(message: string, data?: any) {
-    const corelationId = this.correlationId;
     if (data) {
-      this.logger.info(message + data, { data, corelationId });
+      this.logger.info(message + data, { data, ...this.defaultData });
     } else {
-      this.logger.info(message, { corelationId });
+      this.logger.info(message, { ...this.defaultData });
     }
   }
 
   public async warn(message: string, data?: any) {
-    const corelationId = this.correlationId;
     if (data) {
-      this.logger.warn(message + data, { data, corelationId });
+      this.logger.warn(message + data, { data, ...this.defaultData });
     } else {
-      this.logger.warn(message, { corelationId });
+      this.logger.warn(message, { ...this.defaultData });
     }
   }
 
   public async error(message: string, data?: any) {
-    const corelationId = this.correlationId;
     if (data) {
-      this.logger.error(message + data, { data, corelationId });
+      this.logger.error(message + data, { data, ...this.defaultData });
     } else {
-      this.logger.error(message, { corelationId });
+      this.logger.error(message, { ...this.defaultData });
     }
   }
 }
