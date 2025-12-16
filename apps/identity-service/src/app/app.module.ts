@@ -1,5 +1,6 @@
 import { ConfigurationModule } from '@deigma/configuration';
 import { CorrelationIdMiddleware, LoggingModule } from '@deigma/logging';
+import { ObservabilityModule } from '@deigma/observability';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigurationService } from '../configuration/configuration.service';
 import { HealthModule } from '../health/health.module';
@@ -20,6 +21,7 @@ import { AppDatabaseModule } from './database.module';
     AppDatabaseModule,
     HealthModule,
     LoggingModule,
+    ObservabilityModule,
     MappersModule,
     TenantsModule,
     TenantMembershipsModule,

@@ -1,5 +1,4 @@
-export * from './mapper.interface';
-export * from './mapping.decorators';
+export * from './dto-schema.decorator';
 export * from './dto.mapper';
 export * from './domain.mapper';
 export * from './mapper.interceptor';

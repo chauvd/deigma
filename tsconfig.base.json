@@ -29,6 +29,9 @@
       "@deigma/logging": [
         "packages/infrastructure/logging/src/index.ts"
       ],
+      "@deigma/observability": [
+        "packages/infrastructure/observability/src/index.ts"
+      ],
       "@deigma/domain": [
         "packages/shared/domain/src/index.ts"
       ],
