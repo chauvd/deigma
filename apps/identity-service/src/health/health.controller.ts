@@ -1,7 +1,8 @@
 
+import { Public } from '@deigma/authentication-core';
 import { ILogger } from '@deigma/logging';
 import { Controller, Get, Inject } from '@nestjs/common';
-import { HealthCheckService, HealthCheck, MemoryHealthIndicator } from '@nestjs/terminus';
+import { HealthCheck, HealthCheckService, MemoryHealthIndicator } from '@nestjs/terminus';
 
 @Controller('health')
 export class HealthController {
@@ -12,6 +13,7 @@ export class HealthController {
     ) { }
 
     @Get()
+    @Public()
     @HealthCheck()
     check() {
         this.logger.info('Health check requested');

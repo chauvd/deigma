@@ -1,0 +1,16 @@
+{
+  "name": "@deigma/authentication-keycloak",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/infrastructure/authentication/keycloak/src",
+  "projectType": "library",
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/infrastructure/authentication/keycloak/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}

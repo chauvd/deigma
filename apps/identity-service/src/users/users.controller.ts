@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Inject } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { AuthenticatedPrincipal, OidcJwtAuthGuard, Principal } from '@deigma/authentication-core';
 import { CreateUserDto, UpdateUserDto, UserDto } from '@deigma/dtos';
 import { DomainMapper, MapTo } from '@deigma/mapper';
+import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { User } from './user.entity';
+import { UsersService } from './users.service';
 
+@UseGuards(OidcJwtAuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(
@@ -20,25 +22,35 @@ export class UsersController {
 
   @Get()
   @MapTo(UserDto)
-  async findAll() {
+  async findAll(@Principal() principal: AuthenticatedPrincipal) {
     return await this.usersService.findAll();
   }
 
   @Get(':id')
   @MapTo(UserDto)
-  async findOne(@Param('id') id: string) {
+  async findOne(
+    @Principal() principal: AuthenticatedPrincipal, 
+    @Param('id') id: string
+  ) {
     return await this.usersService.findById(id);
   }
 
   @Patch(':id')
   @MapTo(UserDto)
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  async update(
+    @Principal() principal: AuthenticatedPrincipal, 
+    @Param('id') id: string, 
+    @Body() updateUserDto: UpdateUserDto
+  ) {
     const payload = this.mapper.map(updateUserDto, User);
     return await this.usersService.update(id, payload);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  async remove(
+    @Principal() principal: AuthenticatedPrincipal,
+    @Param('id') id: string
+  ) {
     await this.usersService.delete(id);
   }
 }

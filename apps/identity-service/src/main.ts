@@ -1,17 +1,21 @@
+import { OidcJwtAuthGuard } from '@deigma/authentication-core';
+import { HttpObservabilityInterceptor } from '@deigma/observability';
 import { ValidationPipe, VersioningOptions, VersioningType } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import compression from 'compression';
 import helmet from 'helmet';
 import { AppModule } from './app/app.module';
 import { ConfigurationService } from './configuration/configuration.service';
-import { HttpObservabilityInterceptor } from '@deigma/observability';
 
 async function bootstrap() {
   try {
     const app = await NestFactory.create(AppModule);
 
     app.useGlobalPipes(new ValidationPipe());
+    
+    const reflector = app.get(Reflector);
+    app.useGlobalGuards(new OidcJwtAuthGuard(reflector));
 
     app.useGlobalInterceptors(
       app.get(HttpObservabilityInterceptor),

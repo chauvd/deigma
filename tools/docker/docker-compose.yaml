@@ -3,18 +3,23 @@ services:
     build:
       context: ../../
       dockerfile: ./apps/identity-service/Dockerfile
+    container_name: identity-service
     ports:
-      - "3001:3001"
+      - '3001:3001'
     depends_on:
       mongodb:
         condition: service_healthy
       redis:
         condition: service_started
+      # keycloak:
+      #   condition: service_healthy
     networks:
       - deigma-network
     environment:
       - APP_NAME=IdentityService
+      - APP_AUDIENCE=deigma.com/identity
       - DATABASE_URL=mongodb://mongodb:27017/identity
+      - IDP_ISSUER=http://keycloak:8080/realms/deigma
       - LOG_LEVEL=debug
       - LOG_TO=console
       - NODE_ENV=production
@@ -34,33 +39,85 @@ services:
 
   mongodb:
     image: mongo:latest
+    container_name: mongodb
     ports:
-      - "27017:27017"
+      - '27017:27017'
     volumes:
       - mongo-data:/data/db
     networks:
       - deigma-network
     healthcheck:
-      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   redis:
     image: redis:latest
+    container_name: redis
     ports:
-      - "6379:6379"
+      - '6379:6379'
     networks:
       - deigma-network
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 5
 
+  postgres:
+    image: postgres:18-alpine
+    container_name: keycloak-postgres
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    volumes:
+      # Persistent Postgres data
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U keycloak -d keycloak']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    networks:
+      - deigma-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.7
+    container_name: keycloak
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: start-dev --import-realm
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
+
+      KC_PROXY_HEADERS: xforwarded
+    volumes:
+      # Any *.json in here will be imported when --import-realm is set
+      - ./keycloak/import:/opt/keycloak/data/import:ro
+    healthcheck:
+      test:
+        ['CMD-SHELL', 'curl -fsS http://localhost:8080/health/ready || exit 1']
+      interval: 10s
+      timeout: 3s
+      retries: 30
+      start_period: 30s
+    ports:
+      - '8080:8080'
+    networks:
+      - deigma-network
+
 volumes:
   mongo-data:
-
+  postgres_data:
 
 networks:
   deigma-network:

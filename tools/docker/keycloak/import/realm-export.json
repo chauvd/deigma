@@ -1,0 +1,42 @@
+{
+  "realm": "deigma",
+  "enabled": true,
+  "displayName": "Deigma",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+    "clients": [
+    {
+      "clientId": "deigma-api",
+      "name": "Deigma API",
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "bearerOnly": false
+    },
+    {
+      "clientId": "deigma-app",
+      "name": "Deigma App",
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": ["http://localhost:3000/*"],
+      "webOrigins": ["http://localhost:3000"],
+      "protocolMappers": [
+        {
+          "name": "audience-deigma-api",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "deigma-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ]
+}

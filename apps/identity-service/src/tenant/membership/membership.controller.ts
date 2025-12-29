@@ -3,6 +3,7 @@ import { MapTo } from "@deigma/mapper";
 import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
 import { TenantMembership } from "./membership.entity";
 import { TenantMembershipService } from "./membership.service";
+import { AuthenticatedPrincipal, Principal } from "@deigma/authentication-core";
 
 @Controller('tenants/:tenantId/memberships')
 export class TenantMembershipsController {
@@ -12,13 +13,17 @@ export class TenantMembershipsController {
 
   @Get()
   @MapTo(TenantMembershipDto)
-  async findAll(@Param('tenantId') tenantId: string) {
+  async findAll(
+    @Principal() principal: AuthenticatedPrincipal, 
+    @Param('tenantId') tenantId: string
+  ) {
     return this.membershipsService.findByTenantId(tenantId);
   }
 
   @Post()
   @MapTo(TenantMembershipDto)
   async assign(
+    @Principal() principal: AuthenticatedPrincipal,
     @Param('tenantId') tenantId: string,
     @Body() dto: AssignTenantMembershipDto
   ) {
@@ -28,6 +33,7 @@ export class TenantMembershipsController {
 
   @Delete()
   async unassign(
+    @Principal() principal: AuthenticatedPrincipal,
     @Param('tenantId') tenantId: string,
     @Body() dto: UnassignTenantMembershipDto
   ) {
