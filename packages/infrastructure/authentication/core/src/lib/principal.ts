@@ -18,6 +18,6 @@ export class DefaultAuthenticatedPrincipal implements AuthenticatedPrincipal {
     public readonly email: string | undefined,
     public readonly name: string | undefined,
     public readonly roles: string[],
-    public readonly raw: Record<string, any>,
+    public readonly raw: Record<string, any>
   ) {}
 }

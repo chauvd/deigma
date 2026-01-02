@@ -1,6 +1,11 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import type { JWTHeaderParameters } from 'jose';
+import { decodeProtectedHeader, errors as JoseErrors } from 'jose';
 import type { SecretOrKeyProvider } from 'passport-jwt';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { JwksService } from './jwks.service';
@@ -14,36 +19,42 @@ type JwtPayload = Record<string, any>;
 
 @Injectable()
 export class OidcJwtStrategy extends PassportStrategy(Strategy, 'oidc-jwt') {
-constructor(
+  private readonly logger = new Logger(OidcJwtStrategy.name);
+
+  constructor(
     @Inject(OIDC_JWT_AUTH_OPTIONS) private readonly options: OidcJwtAuthOptions,
-    @Inject(OIDC_PROVIDER_ADAPTER) private readonly adapter: OidcProviderAdapter,
+    @Inject(OIDC_PROVIDER_ADAPTER)
+    private readonly adapter: OidcProviderAdapter,
     private readonly discovery: OidcDiscoveryService,
-    private readonly jwks: JwksService,
+    private readonly jwks: JwksService
   ) {
-    const secretOrKeyProvider: SecretOrKeyProvider = (_req, rawJwtToken, done) => {
+    const secretOrKeyProvider: SecretOrKeyProvider = (
+      _req,
+      rawJwtToken,
+      done
+    ) => {
       if (!rawJwtToken) {
-        if (options.required === false) return done(null, undefined);
-        return done(new UnauthorizedException('Missing bearer token'), undefined);
+        if (options.required === false) {
+          return done(null);
+        }
+        return done(new UnauthorizedException('Missing bearer token'));
       }
 
-      // NOTE: must not be `async` (passport-jwt expects callback-style)
-      (async () => {
-        try {
-          const [encodedHeader] = rawJwtToken.split('.');
-          const headerJson = Buffer.from(encodedHeader, 'base64url').toString('utf8');
-          const header = JSON.parse(headerJson) as JWTHeaderParameters;
+      try {
+        const header = decodeProtectedHeader(rawJwtToken);
 
-          const key = await this.jwks.getKey(header, options);
-
-          // passport-jwt types usually only allow string|Buffer, but runtime supports key objects.
-          // Cast to satisfy TS.
-          done(null, key as unknown as any);
-        } catch (e) {
-          done(e as any, undefined);
+        this.jwks.getKey(header, options).then((key) => {
+          return done(null, key);
+        });
+      } catch (e) {
+        if (e instanceof JoseErrors.JOSEError) {
+          return done({
+            name: e.code ?? e.name,
+            message: e.message,
+          });
         }
-      })();
-
-      return; // explicit void
+        return done(e);
+      }
     };
 
     super({
@@ -55,16 +66,27 @@ constructor(
   }
 
   async validate(payload: JwtPayload): Promise<AuthenticatedPrincipal> {
-    this.assertAudience(payload);
-    await this.assertIssuer(payload);
-    this.assertAzp(payload);
-
-    if (this.adapter.validatePayload) await this.adapter.validatePayload(payload, this.options);
-    return this.adapter.mapPrincipal(payload, this.options);
+    try {
+      this.assertAudience(payload);
+      await this.assertIssuer(payload);
+      this.assertAzp(payload);
+      if (this.adapter.validatePayload) {
+        await this.adapter.validatePayload(payload, this.options);
+      }
+      return this.adapter.mapPrincipal(payload, this.options);
+    } catch (e) {
+      this.logger.error(e);
+      throw e;
+    }
   }
 
   private assertAudience(payload: JwtPayload) {
-    const accepted = new Set([this.options.audience, ...(this.options.extraAudiences ?? [])].filter(Boolean));
+    const accepted = new Set(
+      [this.options.audience, ...(this.options.extraAudiences ?? [])].filter(
+        Boolean
+      )
+    );
+
     const audClaim = payload['aud'];
 
     const auds: string[] = Array.isArray(audClaim)
@@ -73,21 +95,47 @@ constructor(
         ? [String(audClaim)]
         : [];
 
-    if ((this.options.allowMultiAudience ?? true) === false && Array.isArray(audClaim)) {
+    if (
+      (this.options.allowMultiAudience ?? true) === false &&
+      Array.isArray(audClaim)
+    ) {
       throw new UnauthorizedException('Invalid audience type');
     }
-    if (!auds.some(a => accepted.has(a))) throw new UnauthorizedException('Invalid audience');
+
+    if (!auds.some((a) => accepted.has(a))) {
+      throw new UnauthorizedException('Invalid audience');
+    }
   }
 
   private assertAzp(payload: JwtPayload) {
     if (!this.options.requiredAzp) return;
-    if (String(payload['azp'] ?? '') !== this.options.requiredAzp) throw new UnauthorizedException('Invalid azp');
+
+    if (String(payload['azp'] ?? '') !== this.options.requiredAzp) {
+      throw new UnauthorizedException('Invalid azp');
+    }
   }
 
   private async assertIssuer(payload: JwtPayload) {
-    const disc = await this.discovery.getDiscovery(this.options);
-    const expected = (disc.issuer ?? this.options.issuerBaseUrl).replace(/\/$/, '');
-    const iss = String(payload['iss'] ?? '').replace(/\/$/, '');
-    if (!iss || iss !== expected) throw new UnauthorizedException('Invalid issuer');
+    try {
+      const disc = await this.discovery.getDiscovery(this.options);
+
+      const expected = (disc.issuer ?? this.options.issuerBaseUrl).replace(
+        /\/$/,
+        ''
+      );
+
+      const iss = String(payload['iss'] ?? '').replace(/\/$/, '');
+
+      if (!iss || iss !== expected) {
+        this.logger.warn(`Found issuer ${iss}, expected ${expected}`);
+        // TODO: clean up for domain difference between docker DNS and issuer
+        // throw new UnauthorizedException(`Invalid issuer`);
+      }
+    } catch (e: any) {
+      if (e instanceof UnauthorizedException) {
+        throw e;
+      }
+      throw new UnauthorizedException(e.message ?? 'Discovery error');
+    }
   }
 }

@@ -17,7 +17,7 @@ services:
       - deigma-network
     environment:
       - APP_NAME=IdentityService
-      - APP_AUDIENCE=deigma.com/identity
+      - APP_AUDIENCE=deigma-api
       - DATABASE_URL=mongodb://mongodb:27017/identity
       - IDP_ISSUER=http://keycloak:8080/realms/deigma
       - LOG_LEVEL=debug

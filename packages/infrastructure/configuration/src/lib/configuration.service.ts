@@ -1,8 +1,10 @@
+import { Logger } from '@nestjs/common';
 import { ConfigService as NestedConfig } from '@nestjs/config';
 
 export abstract class BaseConfigurationService {
+  private readonly logger = new Logger(BaseConfigurationService.name);
 
-  constructor(protected configService: NestedConfig) { }
+  constructor(protected configService: NestedConfig) {}
 
   protected get(key: string, defaultValue?: string): string {
     const value = process.env[key] ?? this.configService?.get<string>(key);
@@ -39,7 +41,7 @@ export abstract class BaseConfigurationService {
 
     const parsedValue = parseInt(value, 10);
     if (isNaN(parsedValue)) {
-      console.log(`Config error: ${key} is not a valid number`);
+      this.logger.log(`Config error: ${key} is not a valid number`);
       throw new Error(`Config error: ${key} is not a valid number`);
     }
     return parsedValue;

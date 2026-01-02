@@ -17,7 +17,9 @@ export class OidcDiscoveryService {
     const now = Date.now();
     const key = (opts.issuerBaseUrl ?? '').replace(/\/$/, '');
 
-    if (this.cache && this.cache.key === key && this.cache.expiresAt > now) return this.cache.value;
+    if (this.cache && this.cache.key === key && this.cache.expiresAt > now) {
+      return this.cache.value;
+    }
 
     const url = `${key}/.well-known/openid-configuration`;
     const httpTimeoutMs = opts.httpTimeoutMs ?? 3000;
@@ -26,14 +28,17 @@ export class OidcDiscoveryService {
       const value = await firstValueFrom(
         this.http.get(url, { headers: { accept: 'application/json' } }).pipe(
           timeout({ each: httpTimeoutMs }),
-          map(res => res.data as Partial<OidcDiscovery>),
-          map(json => {
-            if (!json.issuer || !json.jwks_uri) throw new Error('OIDC discovery missing issuer/jwks_uri');
-            return { issuer: json.issuer, jwks_uri: json.jwks_uri } as OidcDiscovery;
-          }),
-        ),
+          map((res) => res.data as Partial<OidcDiscovery>),
+          map((json) => {
+            if (!json.issuer || !json.jwks_uri)
+              throw new Error('OIDC discovery missing issuer/jwks_uri');
+            return {
+              issuer: json.issuer,
+              jwks_uri: json.jwks_uri,
+            } as OidcDiscovery;
+          })
+        )
       );
-
       this.cache = { key, value, expiresAt: now + ttl };
       return value;
     } catch (e: any) {

@@ -19,7 +19,10 @@ export interface OidcJwtAuthOptionsFactory {
   createOidcJwtAuthOptions(): MaybePromise<OidcJwtAuthOptions>;
 }
 
-export interface OidcJwtAuthAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
+export interface OidcJwtAuthAsyncOptions extends Pick<
+  ModuleMetadata,
+  'imports'
+> {
   useExisting?: Type<OidcJwtAuthOptionsFactory>;
   useClass?: Type<OidcJwtAuthOptionsFactory>;
   useFactory?: (...args: any[]) => MaybePromise<OidcJwtAuthOptions>;

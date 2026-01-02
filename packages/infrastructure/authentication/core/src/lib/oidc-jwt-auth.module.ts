@@ -1,19 +1,25 @@
-import { DynamicModule, Module, Provider } from '@nestjs/common';
-import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
 import { HttpModule } from '@nestjs/axios';
-
-import { OIDC_JWT_AUTH_OPTIONS, OIDC_PROVIDER_ADAPTER } from './tokens';
-import { OidcJwtAuthAsyncOptions, OidcJwtAuthOptions, OidcJwtAuthOptionsFactory } from './options';
-import type { OidcProviderAdapter } from './provider-adapter';
-import { OidcDiscoveryService } from './oidc-discovery.service';
+import { DynamicModule, Module, Provider } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
 import { JwksService } from './jwks.service';
-import { OidcJwtStrategy } from './oidc-jwt.strategy';
+import { OidcDiscoveryService } from './oidc-discovery.service';
 import { OidcJwtAuthGuard } from './oidc-jwt-auth.guard';
+import { OidcJwtStrategy } from './oidc-jwt.strategy';
+import {
+  OidcJwtAuthAsyncOptions,
+  OidcJwtAuthOptions,
+  OidcJwtAuthOptionsFactory,
+} from './options';
+import type { OidcProviderAdapter } from './provider-adapter';
+import { OIDC_JWT_AUTH_OPTIONS, OIDC_PROVIDER_ADAPTER } from './tokens';
 
 @Module({})
 export class OidcJwtAuthModule {
-  static register(options: OidcJwtAuthOptions, adapter: OidcProviderAdapter): DynamicModule {
+  static register(
+    options: OidcJwtAuthOptions,
+    adapter: OidcProviderAdapter
+  ): DynamicModule {
     return {
       module: OidcJwtAuthModule,
       imports: [
@@ -33,7 +39,10 @@ export class OidcJwtAuthModule {
     };
   }
 
-  static registerAsync(options: OidcJwtAuthAsyncOptions, adapterProvider: Provider): DynamicModule {
+  static registerAsync(
+    options: OidcJwtAuthAsyncOptions,
+    adapterProvider: Provider
+  ): DynamicModule {
     return {
       module: OidcJwtAuthModule,
       imports: [
@@ -54,13 +63,18 @@ export class OidcJwtAuthModule {
     };
   }
 
-  private static createAsyncProviders(options: OidcJwtAuthAsyncOptions): Provider[] {
+  private static createAsyncProviders(
+    options: OidcJwtAuthAsyncOptions
+  ): Provider[] {
     if (options.useFactory) {
-      return [{
-        provide: OIDC_JWT_AUTH_OPTIONS,
-        useFactory: async (...args: any[]) => normalize(await options.useFactory!(...args)),
-        inject: options.inject ?? [],
-      }];
+      return [
+        {
+          provide: OIDC_JWT_AUTH_OPTIONS,
+          useFactory: async (...args: any[]) =>
+            normalize(await options.useFactory!(...args)),
+          inject: options.inject ?? [],
+        },
+      ];
     }
 
     const inject = [options.useExisting ?? options.useClass] as any[];
@@ -68,10 +82,13 @@ export class OidcJwtAuthModule {
     return [
       {
         provide: OIDC_JWT_AUTH_OPTIONS,
-        useFactory: async (factory: OidcJwtAuthOptionsFactory) => normalize(await factory.createOidcJwtAuthOptions()),
+        useFactory: async (factory: OidcJwtAuthOptionsFactory) =>
+          normalize(await factory.createOidcJwtAuthOptions()),
         inject,
       },
-      ...(options.useClass ? [{ provide: options.useClass, useClass: options.useClass }] : []),
+      ...(options.useClass
+        ? [{ provide: options.useClass, useClass: options.useClass }]
+        : []),
     ];
   }
 }
